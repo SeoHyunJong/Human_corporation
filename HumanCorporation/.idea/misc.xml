@@ -4,7 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/drawable/ic_launcher_background.xml" value="0.25092592592592594" />
-        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/fragment_add.xml" value="0.2" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/fragment_alarm.xml" value="0.24320652173913043" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/fragment_detail.xml" value="0.24320652173913043" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/fragment_graph.xml" value="0.2" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/fragment_grid.xml" value="0.24320652173913043" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/fragment_home.xml" value="0.24320652173913043" />
+        <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/layout/fragment_user.xml" value="0.24320652173913043" />
         <entry key="..\:/Users/shj97/Human_corporation/HumanCorporation/app/src/main/res/menu/navigation_main.xml" value="0.2526041666666667" />
       </map>
     </option>

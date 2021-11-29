@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_home"
+        android:icon="@drawable/icon_home"
+        android:enabled="true"
+        android:title="home">
+    </item>
+    <item
+        android:id="@+id/action_graph"
+        android:icon="@drawable/icon_graph"
+        android:enabled="true"
+        android:title="graph">
+    </item>
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/icon_add"
+        android:enabled="true"
+        android:title="add">
+    </item>
 
 </menu>
