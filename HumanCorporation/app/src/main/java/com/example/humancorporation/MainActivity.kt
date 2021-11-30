@@ -13,26 +13,31 @@ class MainActivity : AppCompatActivity(){
         setContentView(R.layout.activity_main)
 
         navigation.run{
-            setOnItemSelectedListener { item->
+            setOnItemSelectedListener { item-> //navigation 메뉴 클릭 이벤트
                 when(item.itemId){
                     R.id.action_home -> {
-                        var homeFragment = HomeFragment()
+                        val homeFragment = HomeFragment()
                         supportFragmentManager.beginTransaction().replace(R.id.main_content, homeFragment).commit()
                     }
                     R.id.action_graph -> {
-                        var graphFragment = GraphFragment()
+                        val graphFragment = GraphFragment()
                         supportFragmentManager.beginTransaction().replace(R.id.main_content, graphFragment).commit()
 
                     }
                     R.id.action_add -> {
-                        var addFragment = AddFragment()
+                        val addFragment = AddFragment()
                         supportFragmentManager.beginTransaction().replace(R.id.main_content, addFragment).commit()
                     }
                 }
                 true
             }
-            selectedItemId = R.id.action_home
+            selectedItemId = R.id.action_home //처음에 제공되는 화면
         }
 
+    }
+
+    fun toAddFragment() {
+        val addFragment = AddFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.main_content, addFragment).commit()
     }
 }
