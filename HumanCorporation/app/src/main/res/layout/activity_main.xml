@@ -31,7 +31,7 @@
         android:id="@+id/nav_division"
         android:background="@color/black"
         android:orientation="horizontal"
-        android:layout_below="@id/navigation"
+        android:layout_above="@id/navigation"
         android:layout_width="match_parent"
         android:layout_height="1dp">
     </LinearLayout>
@@ -40,15 +40,16 @@
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/nav_division">
+        android:layout_above="@id/nav_division"
+        android:layout_below="@id/toolbar_division">
+
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar_division"
-        app:menu="@menu/navigation_main">
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/navigation_main"></com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </RelativeLayout>
