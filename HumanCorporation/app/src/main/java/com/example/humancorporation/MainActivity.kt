@@ -52,14 +52,136 @@ class MainActivity : AppCompatActivity(){
         //supportFragmentManager.beginTransaction().replace(R.id.main_content, addFragment).commit()
     }
 
-    fun productiveAdd(d: String, s: Int, e: Int, contents: String) {
-        var lst: List<Schedule>? = null
-
+    fun AddtoDB(d: String, s: Int, e: Int, contents: String, case: Int): Boolean {
+        var result = false
         val r = Runnable {
-            appDB?.scheduleDao()?.insert(Schedule(0, d, s, e, contents))
+            val i1 = appDB?.scheduleDao()?.inspectionA(d, s, e)
+            val i2 = appDB?.scheduleDao()?.inspectionB(d, s, e)
+            val i3 = appDB?.scheduleDao()?.inspectionC(d, s, e)
+            if(i1?.isEmpty() == true && i2?.isEmpty() == true && i3?.isEmpty() == true) {
+                val price = openPrice(d)
+                var currentPrice = closedPrice(d)
+                if(currentPrice == 0.0){
+                    currentPrice = price
+                }
+                appDB?.scheduleDao()?.insert(Schedule(0, d, s, e, contents, case, currentPrice + calcPrice(price, s, e, case)))
+                result = true
+                runOnUiThread {
+                    when (case) {
+                        1 -> {
+                            Toast.makeText(this@MainActivity, "생산적인 일 칭찬합니다!", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        2 -> {
+                            Toast.makeText(this@MainActivity, "때로는 휴식이 필요한 법이죠", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        3 -> {
+                            Toast.makeText(this@MainActivity, "알쏭달쏭한 일이었네요.", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                }
+            } else{
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "다른 시간의 일과 겹칩니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
         val thread = Thread(r)
         thread.start()
+        thread.join()
+        return result
+    }
 
+    fun DeleteDB(d: String){
+        val r = Runnable{
+            appDB?.scheduleDao()?.deleteAll(d)
+        }
+        val thread = Thread(r)
+        thread.start()
+    }
+
+    fun getDB(d: String): List<Schedule>?{
+        var result: List<Schedule>? = null
+        val r = Runnable{
+            result = appDB?.scheduleDao()?.getAll(d)
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
+    }
+
+    fun openPrice(d: String): Double{
+        var result: Double = 3000.0
+        val r = Runnable{
+            val temp = appDB?.scheduleDao()?.openPrice(d)
+            if(temp != null){
+                if(temp != 0.0){
+                    result = temp
+                }
+            }
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
+    }
+    fun calcPrice(price: Double, s: Int, e: Int, case: Int): Double{
+        return when (case) {
+            1 -> {
+                price.times((e - s) * 0.0003)
+            }
+            2 -> {
+                -price.times((e - s) * 0.0003)
+            }
+            else -> {
+                price
+            }
+        }
+    }
+    fun maxPrice(d: String): Double{
+        var result: Double = 0.0
+        val r = Runnable{
+            result = appDB!!.scheduleDao().maxPrice(d)
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
+    }
+
+    fun minPrice(d: String): Double{
+        var result: Double = 0.0
+        val r = Runnable{
+            result = appDB!!.scheduleDao().minPrice(d)
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
+    }
+
+    fun closedPrice(d: String): Double{
+        var result: Double = 0.0
+        val r = Runnable{
+            result = appDB!!.scheduleDao().closedPrice(d)
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
+    }
+
+    fun getDate(): List<String>{
+        var result: List<String> = emptyList()
+        val r = Runnable{
+            result = appDB!!.scheduleDao().getDate()
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
     }
 }

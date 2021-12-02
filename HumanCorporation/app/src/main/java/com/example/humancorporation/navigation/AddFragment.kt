@@ -12,11 +12,15 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import com.example.humancorporation.AppDatabase
 import com.example.humancorporation.MainActivity
 import com.example.humancorporation.R
 import kotlinx.android.synthetic.main.fragment_add.*
 import java.time.LocalDate
 import java.util.*
+import im.dacer.androidcharts.ClockPieHelper
+
+import im.dacer.androidcharts.ClockPieView
 
 class AddFragment : Fragment(){
     var startTime:Int = 0
@@ -24,6 +28,7 @@ class AddFragment : Fragment(){
     var startMinute:Int = 0
     var endTime:Int = 0
     var datePicked: String = ""
+    var clockPieHelperArrayList = ArrayList<ClockPieHelper>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add, container, false)
@@ -33,6 +38,7 @@ class AddFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         DefaultDate()
+        DefaultClock()
         btn_date.setOnClickListener {
             setDate()
         }
@@ -43,13 +49,16 @@ class AddFragment : Fragment(){
             getTime(end_time)
         }
         btn_add.setOnClickListener {
-            productiveAction()
+            productiveAction(1)
         }
         btn_minus.setOnClickListener{
-
+            productiveAction(2)
         }
         btn_neutral.setOnClickListener {
-
+            productiveAction(3)
+        }
+        deleteAll.setOnClickListener {
+            deleteAction(datePicked)
         }
     }
 
@@ -65,6 +74,8 @@ class AddFragment : Fragment(){
         val dateSetListener = DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
             datePicked = "${y}.${m+1}.${d}"
             btn_date.text = datePicked
+            clearGraph()
+            DefaultClock()
         }
         DatePickerDialog(requireContext(), dateSetListener, cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH)).show()
         //requireContext: 이 fragment와 관련된 context를 반환해준다.
@@ -78,14 +89,22 @@ class AddFragment : Fragment(){
             if(button == start_time){
                 startHour = hour
                 startMinute = minute
-                startTime = "${hour}${minute}".toInt()
+                if(minute >= 10) {
+                    startTime = "${hour}${minute}".toInt()
+                } else {
+                    startTime = "${hour}0${minute}".toInt()
+                }
                 button.text = "${hour}시 ${minute}분"
             } else if(start_time.text != "시작 시간"){
                 if(hour > startHour || (hour == startHour && minute > startMinute)){
-                    endTime = "${hour}${minute}".toInt()
+                    if(minute >= 10) {
+                        endTime = "${hour}${minute}".toInt()
+                    } else {
+                        endTime = "${hour}0${minute}".toInt()
+                    }
                     button.text = "${hour}시 ${minute}분"
                 } else {
-                    Toast.makeText(activity, "당신은 타임머신을 탈 수 없습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "종료시간은 당일 기준 시작시간보다 커야 합니다.", Toast.LENGTH_SHORT).show()
                 }
             } else{
                 Toast.makeText(activity, "시작 시간을 먼저 정해야 합니다.", Toast.LENGTH_SHORT).show()
@@ -101,16 +120,56 @@ class AddFragment : Fragment(){
     3. Graph Fragment 완성
     4. 최종완성 및 발표준비
      */
-    fun productiveAction() {
+    fun productiveAction(case: Int) {
         if(startTime < endTime) {
-            (activity as MainActivity).productiveAdd(
-                datePicked,
-                startTime,
-                endTime,
-                editDay.text.toString()
-            )
+            if((activity as MainActivity).AddtoDB(datePicked, startTime, endTime, editDay.text.toString(), case)){
+                setClock(startTime, endTime)
+            }
         } else {
             Toast.makeText(activity, "입력 시간을 다시한번 확인해주세요", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun deleteAction(d: String){
+        (activity as MainActivity).DeleteDB(d)
+    }
+
+    private fun setClock(start: Int, end: Int) {
+        var sH: Int = 0
+        var sM: Int = 0
+        var eH: Int = 0
+        var eM: Int = 0
+
+        if(start >= 100){
+            sH = start / 100
+            sM = start % 100
+        } else{
+            sH = 0
+            sM = start
+        }
+        if(end >= 100){
+            eH = end / 100
+            eM = end % 100
+        } else{
+            eH = 0
+            eM = end
+        }
+        clockPieHelperArrayList.add(ClockPieHelper(sH, sM, eH, eM))
+        clock_pie_view.setDate(clockPieHelperArrayList)
+    }
+
+    fun DefaultClock(){
+        val lst = (activity as MainActivity).getDB(datePicked)
+        if (lst != null) {
+            for(item in lst){
+                setClock(item.startTime, item.endTime)
+            }
+        }
+    }
+
+    fun clearGraph(){
+        clockPieHelperArrayList = ArrayList<ClockPieHelper>()
+        clockPieHelperArrayList.add(ClockPieHelper(0, 0, 0, 1))
+        clock_pie_view.setDate(clockPieHelperArrayList)
     }
 }

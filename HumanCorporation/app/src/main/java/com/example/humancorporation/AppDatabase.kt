@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = arrayOf(Schedule::class), version = 1)
+@Database(entities = arrayOf(Schedule::class), version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun scheduleDao(): ScheduleDAO
 
@@ -19,7 +19,7 @@ abstract class AppDatabase : RoomDatabase() {
                         context.applicationContext,
                         AppDatabase::class.java,
                         "humanCorp.db"
-                    ).build()
+                    ).addMigrations(MigrateDatabase.MIGRATE_2_3).build()
                 }
             }
             return INSTANCE

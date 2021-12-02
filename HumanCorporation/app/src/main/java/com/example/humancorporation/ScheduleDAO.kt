@@ -20,8 +20,8 @@ import androidx.room.Query
  */
 @Dao
 interface ScheduleDAO{
-    @Query("SELECT * FROM Schedule")
-    fun getAll(): List<Schedule> //Coroutine 내에서 작동하기에 suspend가 붙는다.
+    @Query("SELECT * FROM Schedule WHERE date = :d")
+    fun getAll(d: String): List<Schedule>
 
     @Query("SELECT * FROM Schedule WHERE date = :d")
     fun getDateSchedule(d: String): List<Schedule>
@@ -40,4 +40,22 @@ interface ScheduleDAO{
 
     @Delete
     fun delete(schedule: Schedule)
+
+    @Query("DELETE FROM Schedule WHERE date = :d")
+    fun deleteAll(d: String)
+
+    @Query("SELECT price FROM Schedule WHERE date != :d ORDER BY id DESC LIMIT 1")
+    fun openPrice(d: String): Double
+
+    @Query("SELECT max(price) FROM Schedule WHERE date = :d")
+    fun maxPrice(d: String): Double
+
+    @Query("SELECT min(price) FROM Schedule WHERE date = :d")
+    fun minPrice(d: String): Double
+
+    @Query("SELECT price FROM Schedule WHERE date = :d ORDER BY id DESC LIMIT 1")
+    fun closedPrice(d: String): Double
+
+    @Query("SELECT DISTINCT date FROM Schedule")
+    fun getDate(): List<String>
 }

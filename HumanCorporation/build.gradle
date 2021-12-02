@@ -3,7 +3,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' } //오류가 나서 setting.gradle에도 넣어줘야 한다.
     }
+
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.3"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0"
