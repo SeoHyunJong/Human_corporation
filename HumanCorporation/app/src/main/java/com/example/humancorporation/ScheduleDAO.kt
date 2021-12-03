@@ -21,19 +21,16 @@ import androidx.room.Query
 @Dao
 interface ScheduleDAO{
     @Query("SELECT * FROM Schedule WHERE date = :d")
-    fun getAll(d: String): List<Schedule>
-
-    @Query("SELECT * FROM Schedule WHERE date = :d")
-    fun getDateSchedule(d: String): List<Schedule>
+    fun getAll(d: Long): List<Schedule>
 
     @Query("SELECT * FROM Schedule WHERE date = :d AND startTime BETWEEN :s AND :e")
-    fun inspectionA(d: String, s: Int, e: Int): List<Schedule>
+    fun inspectionA(d: Long, s: Int, e: Int): List<Schedule>
 
     @Query("SELECT * FROM Schedule WHERE date = :d AND endTime BETWEEN :s AND :e")
-    fun inspectionB(d: String, s: Int, e: Int): List<Schedule>
+    fun inspectionB(d: Long, s: Int, e: Int): List<Schedule>
 
     @Query("SELECT * FROM Schedule WHERE date = :d AND startTime <= :s AND endTime >= :e")
-    fun inspectionC(d: String, s: Int, e: Int): List<Schedule>
+    fun inspectionC(d: Long, s: Int, e: Int): List<Schedule>
 
     @Insert
     fun insert(schedule: Schedule)
@@ -42,20 +39,20 @@ interface ScheduleDAO{
     fun delete(schedule: Schedule)
 
     @Query("DELETE FROM Schedule WHERE date = :d")
-    fun deleteAll(d: String)
+    fun deleteAll(d: Long)
 
-    @Query("SELECT price FROM Schedule WHERE date != :d ORDER BY id DESC LIMIT 1")
-    fun openPrice(d: String): Double
+    @Query("SELECT price FROM Schedule WHERE date < :d ORDER BY id DESC LIMIT 1")
+    fun openPrice(d: Long): Double
 
     @Query("SELECT max(price) FROM Schedule WHERE date = :d")
-    fun maxPrice(d: String): Double
+    fun maxPrice(d: Long): Double
 
     @Query("SELECT min(price) FROM Schedule WHERE date = :d")
-    fun minPrice(d: String): Double
+    fun minPrice(d: Long): Double
 
     @Query("SELECT price FROM Schedule WHERE date = :d ORDER BY id DESC LIMIT 1")
-    fun closedPrice(d: String): Double
+    fun closedPrice(d: Long): Double
 
-    @Query("SELECT DISTINCT date FROM Schedule")
-    fun getDate(): List<String>
+    @Query("SELECT DISTINCT date FROM Schedule ORDER BY date")
+    fun getDate(): List<Long>
 }

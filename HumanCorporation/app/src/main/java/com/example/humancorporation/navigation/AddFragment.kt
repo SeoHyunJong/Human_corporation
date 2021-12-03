@@ -27,7 +27,7 @@ class AddFragment : Fragment(){
     var startHour:Int = 0
     var startMinute:Int = 0
     var endTime:Int = 0
-    var datePicked: String = ""
+    var dateLong: Long = 0
     var clockPieHelperArrayList = ArrayList<ClockPieHelper>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,22 +58,23 @@ class AddFragment : Fragment(){
             productiveAction(3)
         }
         deleteAll.setOnClickListener {
-            deleteAction(datePicked)
+            deleteAction(dateLong)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun DefaultDate() {
         val date = LocalDate.now() //현재의 날짜 정보를 받아온다
-        datePicked = "${date.year}.${date.monthValue}.${date.dayOfMonth}"
-        btn_date.text = datePicked // 이외에도 format 형식으로 만드는게 가능
+        calcDateLong(date.year, date.monthValue, date.dayOfMonth)
+        btn_date.text = "${date.year}.${date.monthValue}.${date.dayOfMonth}"
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setDate() {
         val cal = Calendar.getInstance()
 
         val dateSetListener = DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
-            datePicked = "${y}.${m+1}.${d}"
-            btn_date.text = datePicked
+            calcDateLong(y, m+1, d)
+            btn_date.text = "${y}.${m+1}.${d}"
             clearGraph()
             DefaultClock()
         }
@@ -122,7 +123,7 @@ class AddFragment : Fragment(){
      */
     fun productiveAction(case: Int) {
         if(startTime < endTime) {
-            if((activity as MainActivity).AddtoDB(datePicked, startTime, endTime, editDay.text.toString(), case)){
+            if((activity as MainActivity).AddtoDB(dateLong, startTime, endTime, editDay.text.toString(), case)){
                 setClock(startTime, endTime)
             }
         } else {
@@ -130,7 +131,7 @@ class AddFragment : Fragment(){
         }
     }
 
-    fun deleteAction(d: String){
+    fun deleteAction(d: Long){
         (activity as MainActivity).DeleteDB(d)
     }
 
@@ -159,7 +160,7 @@ class AddFragment : Fragment(){
     }
 
     fun DefaultClock(){
-        val lst = (activity as MainActivity).getDB(datePicked)
+        val lst = (activity as MainActivity).getDB(dateLong)
         if (lst != null) {
             for(item in lst){
                 setClock(item.startTime, item.endTime)
@@ -171,5 +172,22 @@ class AddFragment : Fragment(){
         clockPieHelperArrayList = ArrayList<ClockPieHelper>()
         clockPieHelperArrayList.add(ClockPieHelper(0, 0, 0, 1))
         clock_pie_view.setDate(clockPieHelperArrayList)
+    }
+
+    fun calcDateLong(year: Int, month: Int, day: Int){
+        val y = year.toString()
+        var m = ""
+        var d = ""
+        if(month >= 10){
+            m = month.toString()
+        } else {
+            m = "0$month"
+        }
+        if(day >= 10){
+            d = day.toString()
+        } else {
+            d = "0$day"
+        }
+        dateLong = (y+m+d).toLong()
     }
 }

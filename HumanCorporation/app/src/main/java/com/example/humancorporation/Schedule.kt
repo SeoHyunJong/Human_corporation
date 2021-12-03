@@ -15,7 +15,7 @@ DB 에는 어떤 정보가 담겨져야 하나?
  */
 @Entity(tableName = "Schedule")
 data class Schedule(@PrimaryKey(autoGenerate = true) val id: Int,
-                    @ColumnInfo(name = "date") val date: String, 
+                    @ColumnInfo(name = "date") val date: Long,
                     @ColumnInfo(name = "startTime") val startTime: Int, 
                     @ColumnInfo(name = "endTime") val endTime: Int,
                     @ColumnInfo(name = "contents") val contents: String,

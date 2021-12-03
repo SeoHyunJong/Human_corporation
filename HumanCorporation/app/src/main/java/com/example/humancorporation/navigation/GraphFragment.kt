@@ -29,55 +29,58 @@ class GraphFragment : Fragment(){
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         drawGraph()
 
-        val dataSet = CandleDataSet(entries, "").apply {
-            // 심지 부분
-            shadowColor = Color.LTGRAY
-            shadowWidth = 1F
+        if(entries.isNotEmpty()) {
+            val dataSet = CandleDataSet(entries, "").apply {
+                // 심지 부분
+                shadowColor = Color.LTGRAY
+                shadowWidth = 1F
 
-            // 음봄
-            decreasingColor = Color.BLUE
-            decreasingPaintStyle = Paint.Style.FILL
-            // 양봉
-            increasingColor = Color.RED
-            increasingPaintStyle = Paint.Style.FILL
+                // 음봄
+                decreasingColor = Color.BLUE
+                decreasingPaintStyle = Paint.Style.FILL
+                // 양봉
+                increasingColor = Color.RED
+                increasingPaintStyle = Paint.Style.FILL
 
-            neutralColor = Color.DKGRAY
-            setDrawValues(false)
-            // 터치시 노란 선 제거
-            highLightColor = Color.TRANSPARENT
-        }
-        /*
-        candle_chart.axisLeft.run {
-            setDrawAxisLine(false)
-            setDrawGridLines(false)
-            textColor = Color.TRANSPARENT
-        }
+                neutralColor = Color.DKGRAY
+                setDrawValues(false)
+                // 터치시 노란 선 제거
+                highLightColor = Color.TRANSPARENT
+            }
+            /*
+            candle_chart.axisLeft.run {
+                setDrawAxisLine(false)
+                setDrawGridLines(false)
+                textColor = Color.TRANSPARENT
+            }
 
-        candle_chart.axisRight.run {
-            isEnabled = false
-        }
+            candle_chart.axisRight.run {
+                isEnabled = false
+            }
 
-        // X 축
-        candle_chart.xAxis.run {
-            textColor = Color.TRANSPARENT
-            setDrawAxisLine(false)
-            setDrawGridLines(false)
-            setAvoidFirstLastClipping(true)
-        }
+            // X 축
+            candle_chart.xAxis.run {
+                textColor = Color.TRANSPARENT
+                setDrawAxisLine(false)
+                setDrawGridLines(false)
+                setAvoidFirstLastClipping(true)
+            }
 
-        // 범례
-        candle_chart.legend.run {
-            isEnabled = false
-        }
-        */
-        candle_chart.apply {
-            this.data = CandleData(dataSet)
-            description.isEnabled = false
-            isHighlightPerDragEnabled = true
-            requestDisallowInterceptTouchEvent(true)
-            invalidate()
+            // 범례
+            candle_chart.legend.run {
+                isEnabled = false
+            }
+            */
+            candle_chart.apply {
+                this.data = CandleData(dataSet)
+                description.isEnabled = false
+                isHighlightPerDragEnabled = true
+                requestDisallowInterceptTouchEvent(true)
+                invalidate()
+            }
         }
     }
 
@@ -85,8 +88,7 @@ class GraphFragment : Fragment(){
     fun drawGraph(){
         val date = (activity as MainActivity).getDate()
         var cnt = 0f
-
-        if(date.isNotEmpty()) {
+        if(!date.isNullOrEmpty()) {
             for (d in date) {
                 val shadowHigh = (activity as MainActivity).maxPrice(d).toFloat()
                 val shadowLow = (activity as MainActivity).minPrice(d).toFloat()

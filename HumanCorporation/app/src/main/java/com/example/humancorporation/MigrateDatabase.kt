@@ -22,4 +22,5 @@ object MigrateDatabase {
             database.execSQL(alter)
         }
     }
+
 }

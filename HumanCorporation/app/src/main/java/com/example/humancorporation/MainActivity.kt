@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(){
         //supportFragmentManager.beginTransaction().replace(R.id.main_content, addFragment).commit()
     }
 
-    fun AddtoDB(d: String, s: Int, e: Int, contents: String, case: Int): Boolean {
+    fun AddtoDB(d: Long, s: Int, e: Int, contents: String, case: Int): Boolean {
         var result = false
         val r = Runnable {
             val i1 = appDB?.scheduleDao()?.inspectionA(d, s, e)
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun DeleteDB(d: String){
+    fun DeleteDB(d: Long){
         val r = Runnable{
             appDB?.scheduleDao()?.deleteAll(d)
         }
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(){
         thread.start()
     }
 
-    fun getDB(d: String): List<Schedule>?{
+    fun getDB(d: Long): List<Schedule>?{
         var result: List<Schedule>? = null
         val r = Runnable{
             result = appDB?.scheduleDao()?.getAll(d)
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun openPrice(d: String): Double{
+    fun openPrice(d: Long): Double{
         var result: Double = 3000.0
         val r = Runnable{
             val temp = appDB?.scheduleDao()?.openPrice(d)
@@ -137,11 +137,11 @@ class MainActivity : AppCompatActivity(){
                 -price.times((e - s) * 0.0003)
             }
             else -> {
-                price
+                0.0
             }
         }
     }
-    fun maxPrice(d: String): Double{
+    fun maxPrice(d: Long): Double{
         var result: Double = 0.0
         val r = Runnable{
             result = appDB!!.scheduleDao().maxPrice(d)
@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun minPrice(d: String): Double{
+    fun minPrice(d: Long): Double{
         var result: Double = 0.0
         val r = Runnable{
             result = appDB!!.scheduleDao().minPrice(d)
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun closedPrice(d: String): Double{
+    fun closedPrice(d: Long): Double{
         var result: Double = 0.0
         val r = Runnable{
             result = appDB!!.scheduleDao().closedPrice(d)
@@ -174,10 +174,10 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun getDate(): List<String>{
-        var result: List<String> = emptyList()
+    fun getDate(): List<Long>?{
+        var result: List<Long>? = null
         val r = Runnable{
-            result = appDB!!.scheduleDao().getDate()
+            result = appDB?.scheduleDao()?.getDate()
         }
         val thread = Thread(r)
         thread.start()
