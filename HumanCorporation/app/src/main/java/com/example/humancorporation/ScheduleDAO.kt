@@ -20,7 +20,7 @@ import androidx.room.Query
  */
 @Dao
 interface ScheduleDAO{
-    @Query("SELECT * FROM Schedule WHERE date = :d")
+    @Query("SELECT * FROM Schedule WHERE date = :d ORDER BY startTime ASC")
     fun getAll(d: Long): List<Schedule>
 
     @Query("SELECT * FROM Schedule WHERE date = :d AND startTime BETWEEN :s AND :e")
@@ -40,19 +40,4 @@ interface ScheduleDAO{
 
     @Query("DELETE FROM Schedule WHERE date = :d")
     fun deleteAll(d: Long)
-
-    @Query("SELECT price FROM Schedule WHERE date < :d ORDER BY id DESC LIMIT 1")
-    fun openPrice(d: Long): Double
-
-    @Query("SELECT max(price) FROM Schedule WHERE date = :d")
-    fun maxPrice(d: Long): Double
-
-    @Query("SELECT min(price) FROM Schedule WHERE date = :d")
-    fun minPrice(d: Long): Double
-
-    @Query("SELECT price FROM Schedule WHERE date = :d ORDER BY id DESC LIMIT 1")
-    fun closedPrice(d: Long): Double
-
-    @Query("SELECT DISTINCT date FROM Schedule ORDER BY date")
-    fun getDate(): List<Long>
 }

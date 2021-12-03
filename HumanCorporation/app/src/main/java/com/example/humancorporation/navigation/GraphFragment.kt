@@ -9,15 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import com.example.humancorporation.DataUtil
 import com.example.humancorporation.MainActivity
 import com.example.humancorporation.R
 import com.github.mikephil.charting.data.CandleData
 import com.github.mikephil.charting.data.CandleDataSet
 import com.github.mikephil.charting.data.CandleEntry
-import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.android.synthetic.main.fragment_graph.*
-import java.time.LocalDate
 
 class GraphFragment : Fragment(){
     val entries = ArrayList<CandleEntry>()
@@ -82,18 +79,22 @@ class GraphFragment : Fragment(){
                 invalidate()
             }
         }
+
+        txt_price1.text = (activity as MainActivity).todayPrice().toString()
+        txt_price2.text = (activity as MainActivity).maxPrice().toString()
+        txt_price3.text = (activity as MainActivity).minPrice().toString()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun drawGraph(){
-        val date = (activity as MainActivity).getDate()
+        val stock = (activity as MainActivity).getAllStock()
         var cnt = 0f
-        if(!date.isNullOrEmpty()) {
-            for (d in date) {
-                val shadowHigh = (activity as MainActivity).maxPrice(d).toFloat()
-                val shadowLow = (activity as MainActivity).minPrice(d).toFloat()
-                val open = (activity as MainActivity).openPrice(d).toFloat()
-                val close = (activity as MainActivity).closedPrice(d).toFloat()
+        if(!stock.isNullOrEmpty()) {
+            for (item in stock) {
+                val shadowHigh = item.shadowHigh
+                val shadowLow = item.shadowLow
+                val open = item.open
+                val close = item.close
                 entries.add(CandleEntry(cnt, shadowHigh, shadowLow, open, close))
                 cnt++
             }

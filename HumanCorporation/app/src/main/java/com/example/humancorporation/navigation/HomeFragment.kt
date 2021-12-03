@@ -30,8 +30,8 @@ class HomeFragment : Fragment(){
         }
         val date = LocalDate.now() //현재의 날짜 정보를 받아온다
         calcDateLong(date.year, date.monthValue, date.dayOfMonth)
-        val currentPrice = (activity as MainActivity).closedPrice(dateLong)
-        val openPrice = (activity as MainActivity).openPrice(dateLong)
+        val currentPrice = (activity as MainActivity).todayPrice()
+        val openPrice = (activity as MainActivity).todayOpenPrice()
 
         life_price.text = "${round(currentPrice).toInt()} 원"
         calcPer(currentPrice, openPrice)
@@ -54,7 +54,7 @@ class HomeFragment : Fragment(){
         }
         dateLong = (y+m+d).toLong()
     }
-    fun calcPer(c: Double, o: Double) {
+    fun calcPer(c: Float, o: Float) {
         val per = round(((c-o)/o)*100*100)/100
         if(per >= 0){
             change_per.setTextColor(Color.RED)

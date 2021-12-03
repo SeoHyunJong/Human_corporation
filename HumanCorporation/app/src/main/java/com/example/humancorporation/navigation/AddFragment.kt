@@ -21,6 +21,7 @@ import java.util.*
 import im.dacer.androidcharts.ClockPieHelper
 
 import im.dacer.androidcharts.ClockPieView
+import kotlin.math.abs
 
 class AddFragment : Fragment(){
     var startTime:Int = 0
@@ -29,6 +30,7 @@ class AddFragment : Fragment(){
     var endTime:Int = 0
     var dateLong: Long = 0
     var clockPieHelperArrayList = ArrayList<ClockPieHelper>()
+    var remain: Int = 1440
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add, container, false)
@@ -39,6 +41,11 @@ class AddFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         DefaultDate()
         DefaultClock()
+        DefaultRemain()
+        btn_complete.setOnClickListener {
+            completeAction(dateLong)
+            Toast.makeText(activity, "성공적으로 기록되었습니다.", Toast.LENGTH_SHORT).show()
+        }
         btn_date.setOnClickListener {
             setDate()
         }
@@ -77,6 +84,8 @@ class AddFragment : Fragment(){
             btn_date.text = "${y}.${m+1}.${d}"
             clearGraph()
             DefaultClock()
+            remain = 1440
+            DefaultRemain()
         }
         DatePickerDialog(requireContext(), dateSetListener, cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH)).show()
         //requireContext: 이 fragment와 관련된 context를 반환해준다.
@@ -125,6 +134,7 @@ class AddFragment : Fragment(){
         if(startTime < endTime) {
             if((activity as MainActivity).AddtoDB(dateLong, startTime, endTime, editDay.text.toString(), case)){
                 setClock(startTime, endTime)
+                remainAction()
             }
         } else {
             Toast.makeText(activity, "입력 시간을 다시한번 확인해주세요", Toast.LENGTH_SHORT).show()
@@ -189,5 +199,26 @@ class AddFragment : Fragment(){
             d = "0$day"
         }
         dateLong = (y+m+d).toLong()
+    }
+
+    fun completeAction(d: Long){
+        (activity as MainActivity).completeDay(d)
+    }
+
+    fun DefaultRemain(){
+        val lst = (activity as MainActivity).getDB(dateLong)
+        if (lst != null) {
+            for(item in lst){
+                val minute = ((item.endTime/100)*60 + item.endTime%100) - ((item.startTime/100)*60 + item.startTime%100)
+                remain -= minute
+            }
+            remainMinute.text = "${remain}분"
+        }
+    }
+
+    fun remainAction(){
+        val minute = ((endTime/100)*60 + endTime%100) - ((startTime/100)*60 + startTime%100)
+        remain -= minute
+        remainMinute.text = "${remain}분"
     }
 }

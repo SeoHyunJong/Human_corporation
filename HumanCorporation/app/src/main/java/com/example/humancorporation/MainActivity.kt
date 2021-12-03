@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity(){
     private var appDB: AppDatabase? = null
@@ -59,12 +60,7 @@ class MainActivity : AppCompatActivity(){
             val i2 = appDB?.scheduleDao()?.inspectionB(d, s, e)
             val i3 = appDB?.scheduleDao()?.inspectionC(d, s, e)
             if(i1?.isEmpty() == true && i2?.isEmpty() == true && i3?.isEmpty() == true) {
-                val price = openPrice(d)
-                var currentPrice = closedPrice(d)
-                if(currentPrice == 0.0){
-                    currentPrice = price
-                }
-                appDB?.scheduleDao()?.insert(Schedule(0, d, s, e, contents, case, currentPrice + calcPrice(price, s, e, case)))
+                appDB?.scheduleDao()?.insert(Schedule(0, d, s, e, contents, case))
                 result = true
                 runOnUiThread {
                     when (case) {
@@ -97,6 +93,7 @@ class MainActivity : AppCompatActivity(){
     fun DeleteDB(d: Long){
         val r = Runnable{
             appDB?.scheduleDao()?.deleteAll(d)
+            appDB?.stockDAO()?.deleteAll(d)
         }
         val thread = Thread(r)
         thread.start()
@@ -113,38 +110,28 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun openPrice(d: Long): Double{
-        var result: Double = 3000.0
-        val r = Runnable{
-            val temp = appDB?.scheduleDao()?.openPrice(d)
-            if(temp != null){
-                if(temp != 0.0){
-                    result = temp
-                }
-            }
-        }
-        val thread = Thread(r)
-        thread.start()
-        thread.join() // thread가 끝날때까지 기다린다.
-        return result
-    }
-    fun calcPrice(price: Double, s: Int, e: Int, case: Int): Double{
+    fun calcPrice(price: Float, s: Int, e: Int, case: Int): Float{
+        val minute = ((e/100)*60+e%100) - ((s/100)*60+s%100)
         return when (case) {
             1 -> {
-                price.times((e - s) * 0.0003)
+                price.times(minute * 0.0003f)
             }
             2 -> {
-                -price.times((e - s) * 0.0003)
+                -price.times(minute * 0.0003f)
             }
             else -> {
-                0.0
+                0f
             }
         }
     }
-    fun maxPrice(d: Long): Double{
-        var result: Double = 0.0
+
+    fun openPrice(d: Long): Float{
+        var result: Float = 3000f
         val r = Runnable{
-            result = appDB!!.scheduleDao().maxPrice(d)
+            val temp = appDB!!.stockDAO().getOpenPrice(d)
+            if(temp != 0f){
+                result = temp
+            }
         }
         val thread = Thread(r)
         thread.start()
@@ -152,10 +139,33 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun minPrice(d: Long): Double{
-        var result: Double = 0.0
+    fun completeDay(d: Long) {
+        val lst = getDB(d)
+        val price = openPrice(d)
+        var currentPrice = price
+        val priceLst = ArrayList<Float>()
+        if(!lst.isNullOrEmpty()){
+            for(item in lst){
+                val s = item.startTime
+                val e = item.endTime
+                val case = item.typeNum
+                currentPrice += calcPrice(price, s, e, case)
+                priceLst.add(currentPrice)
+            }
+            val high = priceLst.maxOrNull()
+            val low = priceLst.minOrNull()
+            val r = Runnable{
+                appDB?.stockDAO()?.insert(CSStock(d, price, currentPrice, high!!, low!!))
+            }
+            val thread = Thread(r)
+            thread.start()
+        }
+    }
+
+    fun getAllStock(): List<CSStock>?{
+        var result: List<CSStock>? = null
         val r = Runnable{
-            result = appDB!!.scheduleDao().minPrice(d)
+            result = appDB?.stockDAO()?.getAll()
         }
         val thread = Thread(r)
         thread.start()
@@ -163,10 +173,13 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun closedPrice(d: Long): Double{
-        var result: Double = 0.0
+    fun todayPrice(): Float{
+        var result: Float = 3000f
         val r = Runnable{
-            result = appDB!!.scheduleDao().closedPrice(d)
+            val temp = appDB!!.stockDAO().getTodayPrice()
+            if(temp != 0f){
+                result = temp
+            }
         }
         val thread = Thread(r)
         thread.start()
@@ -174,10 +187,41 @@ class MainActivity : AppCompatActivity(){
         return result
     }
 
-    fun getDate(): List<Long>?{
-        var result: List<Long>? = null
+    fun todayOpenPrice(): Float{
+        var result: Float = 3000f
         val r = Runnable{
-            result = appDB?.scheduleDao()?.getDate()
+            val temp = appDB!!.stockDAO().getTodayOpenPrice()
+            if(temp != 0f){
+                result = temp
+            }
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
+    }
+
+    fun maxPrice(): Float{
+        var result: Float = 3000f
+        val r = Runnable{
+            val temp = appDB!!.stockDAO().getMaxPrice()
+            if(temp != 0f){
+                result = temp
+            }
+        }
+        val thread = Thread(r)
+        thread.start()
+        thread.join() // thread가 끝날때까지 기다린다.
+        return result
+    }
+
+    fun minPrice(): Float{
+        var result: Float = 3000f
+        val r = Runnable{
+            val temp = appDB!!.stockDAO().getMinPrice()
+            if(temp != 0f){
+                result = temp
+            }
         }
         val thread = Thread(r)
         thread.start()

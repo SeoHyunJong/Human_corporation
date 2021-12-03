@@ -11,7 +11,6 @@ DB 에는 어떤 정보가 담겨져야 하나?
 3. 종료 시간 endTime
 4. 내용 contents
 5. 생산적/비생산적/중립 typeNum (1~3)
-6. 가격 price Double
  */
 @Entity(tableName = "Schedule")
 data class Schedule(@PrimaryKey(autoGenerate = true) val id: Int,
@@ -19,5 +18,4 @@ data class Schedule(@PrimaryKey(autoGenerate = true) val id: Int,
                     @ColumnInfo(name = "startTime") val startTime: Int, 
                     @ColumnInfo(name = "endTime") val endTime: Int,
                     @ColumnInfo(name = "contents") val contents: String,
-                    @ColumnInfo(name = "typeNum") val typeNum: Int,
-                    @ColumnInfo(name = "price") val price: Double)
+                    @ColumnInfo(name = "typeNum") val typeNum: Int)

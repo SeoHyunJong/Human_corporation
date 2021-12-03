@@ -14,13 +14,4 @@ object MigrateDatabase {
         }
     }
 
-    val MIGRATE_2_3 = object : Migration(2, 3) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            // 변경 쿼리
-            val alter = "ALTER table Schedule add column price DOUBLE NOT NULL default 3000.0"
-            // 쿼리 적용
-            database.execSQL(alter)
-        }
-    }
-
 }
